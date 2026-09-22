@@ -8,6 +8,7 @@ This system parses bolded recipes from a master Google Doc, ingests quick notes 
 
 ## 📑 Table of Contents
 - [Project Overview](#project-overview)
+- [Visual Overview](#visual-overview)
 - [Key Features](#key-features)
 - [System Architecture](#system-architecture)
 - [Technical Capabilities](#technical-capabilities)
@@ -25,6 +26,14 @@ This project automates that entire process:
 2. **Ingestion:** The script scans the Google Doc for selected recipes (including recursive sub-recipes) and automatically pulls unread notes from Gmail/Keep via automated label filters.
 3. **Consolidation:** Ingredients are merged with static staple items, cleaned via Regular Expressions (with protein quantity preservation), and deduplicated.
 4. **Execution:** Generates a primary `Grocery List` and an optimized `Route` tab that dynamically ranks items by store location, kitchen staple status, and debounced interactive checkbox sorting.
+
+---
+
+## 📸 Visual Overview
+
+| 1. Recipe Selection (Google Doc) | 2. List Generation (Google Sheets) | 3. Optimized Store Route (Output) |
+| :---: | :---: | :---: |
+| ![Table of Recipes](images/Table_of_Recipes.png) | ![Generated List](images/Generated_Grocery_List.png) | ![Optimized Route](images/Optimized_Route_List.png) |
 
 ---
 
