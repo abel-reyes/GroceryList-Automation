@@ -58,10 +58,10 @@
 // through hundreds of lines of code.
 const CONFIG = {
   // Key: Value pairs. Access these later using dot notation: CONFIG.RECIPE_DOC_ID
-  RECIPE_DOC_ID: '1vETDYeMZ3VITa2YZMwYtwHvuXd2YK0KOsXUTDCQI_2o',     // From the doc's URL
+  RECIPE_DOC_ID: 'YOUR_RECIPE_DOC_ID_HERE',                          // From the doc's URL
   CONTENTS_TAB_TITLE: 'Table of Recipes',                            // Exact tab title in the recipe doc
-  KEEP_PASTE_DOC_ID: '1RJfEyDBAxtUZFnm6M_9021NBFT6PUJbh4wSbIIzdPVw', // Separate, single-tab doc you paste your Keep note into
-  GROCERY_SHEET_ID: '174ci47bIgtvtU9vw6FLVwkHbXaNh1dGYabcB0sxj84o',  // this Sheet's own ID, from its URL
+  KEEP_PASTE_DOC_ID: 'YOUR_KEEP_PASTE_DOC_ID_HERE',                  // Separate, single-tab doc you paste your Keep note into
+  GROCERY_SHEET_ID: 'YOUR_GROCERY_SHEET_ID_HERE',                    // this Sheet's own ID, from its URL
   STAPLES_SHEET_NAME: 'Staples',                                     // Reference sheet containing 'Staples', items you want included each time the list generates
   KEEP_SHEET_NAME: 'Keep Items',                                     // Reference sheet where Keep Doc populates contents into
   OUTPUT_SHEET_NAME: 'Grocery List',                                 // Sheet that receives the information for further sorting
