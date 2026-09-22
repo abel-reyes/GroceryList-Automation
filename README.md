@@ -98,12 +98,15 @@ SpreadsheetApp Output
 
 
 ```
-
+├── images/
+│   ├── 1.Table_of_Recipes.png          # Input recipe book selection screenshot
+│   ├── 2.Generated_Grocery_List.png    # Execution dialog screenshot
+│   └── 3.Optimized_Route_List.png      # Final route & checkbox output screenshot
 ├── src/
-│   ├── Code.gs              # Core Google Apps Script automation logic
-│   └── Index.html           # Web App frontend template for mobile execution
-├── LICENSE                  # MIT License
-└── README.md                # Main project documentation
+│   ├── Code.gs                       # Core Google Apps Script automation logic
+│   └── Index.html                    # Web App frontend template for mobile access
+├── LICENSE                           # MIT License
+└── README.md                         # Main project documentation
 
 ```
 
