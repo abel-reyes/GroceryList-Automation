@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f7f7f5;
+      margin: 0;
+      padding: 24px 16px;
+      color: #222;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0 0 24px;
+      text-align: center;
+    }
+    button {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 17px;
+      font-weight: 600;
+      padding: 18px 16px;
+      margin-bottom: 14px;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.6;
+    }
+    #generateBtn { background: #2e7d32; }
+    #syncBtn { background: #1565c0; }
+    #status {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.4;
+      display: none;
+    }
+    #status.success { background: #e8f5e9; color: #1b5e20; display: block; }
+    #status.error { background: #ffebee; color: #b71c1c; display: block; }
+    #status.loading { background: #eeeeee; color: #555; display: block; }
+    a.sheetLink {
+      display: block;
+      text-align: center;
+      margin-top: 24px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>🛒 Grocery List</h1>
+
+  <button id="syncBtn" onclick="runAction('syncBtn', 'webSyncKeepFromDoc')">
+    Sync Keep Paste Doc
+  </button>
+
+  <button id="generateBtn" onclick="runAction('generateBtn', 'webGenerateGroceryList')">
+    Generate List
+  </button>
+
+  <div id="status"></div>
+
+  <script>
+    function runAction(buttonId, serverFunctionName) {
+      const status = document.getElementById('status');
+
+      document.querySelectorAll('button').forEach(function (b) { b.disabled = true; });
+      status.className = 'loading';
+      status.textContent = 'Working…';
+
+      google.script.run
+        .withSuccessHandler(function (message) {
+          document.querySelectorAll('button').forEach(function (b) { b.disabled = false; });
+          status.className = 'success';
+          status.textContent = message;
+        })
+        .withFailureHandler(function (error) {
+          document.querySelectorAll('button').forEach(function (b) { b.disabled = false; });
+          status.className = 'error';
+          status.textContent = 'Error: ' + error.message;
+        })[serverFunctionName]();
+    }
+  </script>
+</body>
+</html>
