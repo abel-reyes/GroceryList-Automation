@@ -65,14 +65,14 @@ This project automates that entire process:
 ```
 
 ┌───────────────────────────┐      ┌───────────────────────────┐      ┌───────────────────────────┐
-│   Master Google Doc       │      │   Gmail Keep Import       │      │   Staples & Reference     │
-│  (Bolded Recipes & Tabs)  │      │  (Unread Label Emails)    │      │     (Google Sheets)       │
+│     Master Google Doc     │      │     Gmail Keep Import     │      │    Staples & Reference    │
+│   (Bolded Recipes & Tabs) │      │   (Unread Label Emails)   │      │      (Google Sheets)      │
 └─────────────┬─────────────┘      └─────────────┬─────────────┘      └─────────────┬─────────────┘
               │                                  │                                  │
-     Docs API / Parsing                   GmailApp API                     SpreadsheetApp API
+     Docs API / Parsing                    GmailApp API                     SpreadsheetApp API
               │                                  │                                  │
 ┌─────────────▼──────────────────────────────────▼──────────────────────────────────▼─────────────┐
-│                                   Google Apps Script Engine                                     │
+│                                    Google Apps Script Engine                                    │
 │  • Recursive Sub-Recipe Extraction          • RegEx Ingredient Cleaning & Protein Rules         │
 │  • Title Case Standardizing                 • Multi-Source Deduplication & Counting             │
 │  • CacheService Debounced onEdit Sorting    • Dynamic Formula Writing (INDEX / MATCH)           │
@@ -81,7 +81,7 @@ This project automates that entire process:
                                       SpreadsheetApp Output
                                                  │
 ┌────────────────────────────────────────────────▼────────────────────────────────────────────────┐
-│                                    Google Sheets Outputs                                        │
+│                                     Google Sheets Outputs                                       │
 │  • Grocery List Tab: Consolidated items, notes, quantities, and formula-backed locations.       │
 │  • Route Tab: Store-aisle ordered shopping list with interactive auto-sorting checkboxes.       │
 └─────────────────────────────────────────────────────────────────────────────────────────────────┘
@@ -103,6 +103,7 @@ This project automates that entire process:
 
 
 ```
+
 ├── images/
 │   ├── 1.Table_of_Recipes.png          # Input recipe book selection screenshot
 │   ├── 2.Generated_Grocery_List.png    # Execution dialog screenshot
@@ -114,6 +115,8 @@ This project automates that entire process:
 └── README.md                           # Main project documentation
 
 ```
+
+---
 
 ## License
 
