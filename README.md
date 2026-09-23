@@ -31,9 +31,14 @@ This project automates that entire process:
 
 ## Visual Overview
 
-| 1. Recipe Selection (Google Doc) | 2. List Generation (Google Sheets) | 3. Optimized Store Route (Output) |
-| :---: | :---: | :---: |
-| ![Table of Recipes](images/1.Table_of_Recipes.png) | ![Generated List](images/2.Generated_Grocery_List.png) | ![Optimized Route](images/3.Optimized_Route_List.png) |
+### 1. Recipe Selection (Google Doc)
+![Table of Recipes](images/1.Table_of_Recipes.png)
+
+### 2. List Generation (Google Sheets)
+![Generated List](images/2.Generated_Grocery_List.png)
+
+### 3. Optimized Store Route (Output)
+![Optimized Route](images/3.Optimized_Route_List.png)
 
 ---
 
