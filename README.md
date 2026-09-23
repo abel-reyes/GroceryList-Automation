@@ -1,4 +1,4 @@
-# Recipe & Keep Automated Grocery List Generator 🛒📑
+# Recipe & Keep Automated Grocery List Generator 🛒
 
 A multi-source grocery list generator and store routing engine built with **Google Apps Script**, **JavaScript**, and **Google Workspace APIs** (Docs, Sheets, Gmail). 
 
@@ -6,7 +6,7 @@ This system parses bolded recipes from a master Google Doc, ingests quick notes 
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 - [Project Overview](#project-overview)
 - [Visual Overview](#visual-overview)
 - [Key Features](#key-features)
@@ -17,7 +17,7 @@ This system parses bolded recipes from a master Google Doc, ingests quick notes 
 
 ---
 
-## 🌟 Project Overview
+## Project Overview
 
 Planning weekly grocery runs across multiple recipes, static kitchen staples, and temporary ad-hoc notes usually involves tedious manual cross-referencing.
 
@@ -29,7 +29,7 @@ This project automates that entire process:
 
 ---
 
-## 📸 Visual Overview
+## Visual Overview
 
 | 1. Recipe Selection (Google Doc) | 2. List Generation (Google Sheets) | 3. Optimized Store Route (Output) |
 | :---: | :---: | :---: |
@@ -37,7 +37,7 @@ This project automates that entire process:
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 - **Multi-Source Data Ingestion:**
   - **Google Docs API:** Parses structured recipe tables and extracts ingredient lists from active tabs.
@@ -54,7 +54,7 @@ This project automates that entire process:
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 
 ```
@@ -85,7 +85,7 @@ SpreadsheetApp Output
 
 ---
 
-## 💻 Technical Capabilities
+## Technical Capabilities
 
 - **`Google Docs API (v1)`**: Used alongside `includeTabsContent` to navigate multi-tab document hierarchies and parse nested table paragraphs.
 - **`Regular Expressions (RegEx)`**: Custom regex patterns handle unit removal, fractional numbers, unicode characters (`¼`, `½`), and case-insensitive keyword matching.
@@ -94,7 +94,7 @@ SpreadsheetApp Output
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 
 ```
@@ -112,7 +112,7 @@ SpreadsheetApp Output
 
 ---
 
-## 📄 License
+## License
 
 This project is open source and available under the [MIT License](LICENSE).
 
