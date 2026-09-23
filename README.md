@@ -68,21 +68,21 @@ This project automates that entire process:
 │   Master Google Doc       │      │   Gmail Keep Import       │      │   Staples & Reference     │
 │  (Bolded Recipes & Tabs)  │      │  (Unread Label Emails)    │      │     (Google Sheets)       │
 └─────────────┬─────────────┘      └─────────────┬─────────────┘      └─────────────┬─────────────┘
-│                                  │                                  │
-Docs API / Parsing                 GmailApp API                     SpreadsheetApp API
-│                                  │                                  │
+              │                                  │                                  │
+     Docs API / Parsing                   GmailApp API                     SpreadsheetApp API
+              │                                  │                                  │
 ┌─────────────▼──────────────────────────────────▼──────────────────────────────────▼─────────────┐
 │                                   Google Apps Script Engine                                     │
 │  • Recursive Sub-Recipe Extraction          • RegEx Ingredient Cleaning & Protein Rules         │
 │  • Title Case Standardizing                 • Multi-Source Deduplication & Counting             │
 │  • CacheService Debounced onEdit Sorting    • Dynamic Formula Writing (INDEX / MATCH)           │
 └────────────────────────────────────────────────┬────────────────────────────────────────────────┘
-│
-SpreadsheetApp Output
-│
+                                                 │
+                                      SpreadsheetApp Output
+                                                 │
 ┌────────────────────────────────────────────────▼────────────────────────────────────────────────┐
 │                                    Google Sheets Outputs                                        │
-│  • Grocery List Tab: Consolidated items, notes, quantities, and formula-backed locations.        │
+│  • Grocery List Tab: Consolidated items, notes, quantities, and formula-backed locations.       │
 │  • Route Tab: Store-aisle ordered shopping list with interactive auto-sorting checkboxes.       │
 └─────────────────────────────────────────────────────────────────────────────────────────────────┘
 
@@ -108,10 +108,10 @@ SpreadsheetApp Output
 │   ├── 2.Generated_Grocery_List.png    # Execution dialog screenshot
 │   └── 3.Optimized_Route_List.png      # Final route & checkbox output screenshot
 ├── src/
-│   ├── Code.gs                       # Core Google Apps Script automation logic
-│   └── Index.html                    # Web App frontend template for mobile access
-├── LICENSE                           # MIT License
-└── README.md                         # Main project documentation
+│   ├── Code.gs                         # Core Google Apps Script automation logic
+│   └── Index.html                      # Web App frontend template for mobile access
+├── LICENSE                             # MIT License
+└── README.md                           # Main project documentation
 
 ```
 
