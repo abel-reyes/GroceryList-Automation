@@ -329,10 +329,8 @@ function webSyncKeepFromDoc() {
 // MAIN GENERATOR LOGIC
 // ------------------------------------------------------------------------------
 function runGenerateGroceryList() {
-  // AUTOMATIC EMAIL IMPORT:
-  // Automatically imports and updates Keep Items from Gmail before generating the list
+  // Preserve the legacy ordering: refresh Gmail imports before reading recipe tabs.
   pullKeepFromGmail();
-  
   // Call Advanced Google Docs API to fetch raw structural data including tabs
   const doc = Docs.Documents.get(CONFIG.RECIPE_DOC_ID, { includeTabsContent: true });
 
@@ -340,6 +338,14 @@ function runGenerateGroceryList() {
   const tabs = flattenTabs(doc.tabs || []);
 
   const selectedTitles = getSelectedRecipeTitles(tabs);
+  const result = generateGroceryListForTabs(tabs, selectedTitles, null, true);
+  return 'Grocery list generated: ' + result.grouped.length + ' items total (' + selectedTitles.length + ' recipe(s) selected).';
+}
+
+/** Shared recipe-to-sheet pipeline used by legacy bold selection and Family App. */
+function generateGroceryListForTabs(tabs, selectedTitles, selectedTabIds, keepImportAlreadyPulled) {
+  // Keep the established Gmail import, Staples, normalization, and Sheet behavior.
+  if (!keepImportAlreadyPulled) pullKeepFromGmail();
 
   let allItems = []; // Declare reassignable variable `let`
 
@@ -347,9 +353,12 @@ function runGenerateGroceryList() {
   // If selectedTitles has items, process recipe ingredients; otherwise log and move to Staples/Keep items.
   if (selectedTitles.length > 0) {
     // FOREACH LOOP: Runs a function on every single item inside an array.
-    selectedTitles.forEach(function (title) {
+    selectedTitles.forEach(function (title, index) {
       // `.concat()` merges two arrays together into one new combined array.
-      allItems = allItems.concat(getIngredientsForRecipe(tabs, title));
+      const tab = selectedTabIds
+        ? tabs.find(function (candidate) { return candidate.tabProperties && candidate.tabProperties.tabId === selectedTabIds[index]; })
+        : findTabByTitle(tabs, title);
+      allItems = allItems.concat(tab ? getIngredientsForRecipeTab_(tabs, tab) : []);
     });
   } else {
     Logger.log('No bolded recipes found in "' + CONFIG.CONTENTS_TAB_TITLE + '". Generating list using only Staples and Keep items.');
@@ -368,7 +377,83 @@ function runGenerateGroceryList() {
   // Populate dynamic store navigation tab
   updateRouteSheet();
 
-  return 'Grocery list generated: ' + grouped.length + ' items total (' + selectedTitles.length + ' recipe(s) selected).';
+  return { grouped: grouped, selectedTitles: selectedTitles };
+}
+
+/** Lightweight selectable recipe metadata for the authenticated Apps Script API caller. */
+function getFamilyAppRecipeCatalog() {
+  const doc = Docs.Documents.get(CONFIG.RECIPE_DOC_ID, { includeTabsContent: true });
+  const tabs = flattenTabs(doc.tabs || []);
+  return getFamilyAppRecipeCatalogFromTabs_(doc, tabs);
+}
+
+/** Family App adapter resolves immutable tab IDs, then uses the same parser and output pipeline. */
+function generateFamilyAppGroceryList(selectedRecipeKeys) {
+  if (!Array.isArray(selectedRecipeKeys)) throw new Error('Selected recipe keys must be an array.');
+  const doc = Docs.Documents.get(CONFIG.RECIPE_DOC_ID, { includeTabsContent: true });
+  const tabs = flattenTabs(doc.tabs || []);
+  const keys = Array.from(new Set(selectedRecipeKeys.map(function (key) { return String(key || '').trim(); }).filter(Boolean)));
+  const selected = resolveFamilyAppRecipeKeys_(doc, tabs, keys);
+  if (selected.some(function (recipe) { return !recipe; })) throw new Error('One or more selected recipes no longer exist. Refresh the recipe catalog and try again.');
+  if (!selected.length) throw new Error('Select at least one recipe before generating a grocery list.');
+
+  const selectedTitles = selected.map(function (recipe) { return recipe.title; });
+  const selectedKeys = selected.map(function (recipe) { return recipe.recipeKey; });
+  const pipelineResult = generateGroceryListForTabs(tabs, selectedTitles, selectedKeys);
+  const routeSheet = getGrocerySpreadsheet().getSheetByName(CONFIG.ROUTE_SHEET_NAME);
+  const routeRows = routeSheet && routeSheet.getLastRow() >= 4
+    ? routeSheet.getRange(4, 2, routeSheet.getLastRow() - 3, 4).getDisplayValues()
+    : [];
+  const routeByName = {};
+  routeRows.forEach(function (row, index) {
+    if (row[0]) routeByName[row[0].toLowerCase()] = { location: row[2] || null, kitchenStaple: row[3].toLowerCase() === 'kitchen staple', routeRank: index + 1 };
+  });
+  return {
+    selectedRecipes: selected.map(function (recipe) { return { recipeKey: recipe.recipeKey, title: recipe.title }; }),
+    generatedAt: new Date().toISOString(),
+    items: pipelineResult.grouped.map(function (item) {
+      const route = routeByName[item.display.toLowerCase()] || {};
+      const quantity = item.count > 1 ? (item.source === 'keep' ? '(x' + item.count + ')' : '(' + item.count + 'x)') : '';
+      return {
+        name: item.display,
+        quantity: quantity + (item.isMergedKeep ? (quantity ? ' [K]' : '[K]') : ''),
+        location: route.location || null,
+        kitchenStaple: !!route.kitchenStaple,
+        routeRank: route.routeRank || 0,
+        source: item.source
+      };
+    })
+  };
+}
+
+function getFamilyAppRecipeCatalogFromTabs_(doc, tabs) {
+  const docId = CONFIG.RECIPE_DOC_ID;
+  return tabs.filter(function (tab) {
+    const properties = tab.tabProperties || {};
+    const content = tab.documentTab && tab.documentTab.body && tab.documentTab.body.content || [];
+    const titleIndex = content.findIndex(function (element) { return !!element.paragraph; });
+    const hasIngredientSection = titleIndex >= 0 && content.slice(titleIndex + 1).some(function (element) { return !element.paragraph; });
+    return properties.tabId && properties.title &&
+      properties.title.trim().toLowerCase() !== CONFIG.CONTENTS_TAB_TITLE.toLowerCase() &&
+      !(tab.childTabs && tab.childTabs.length) && tab.documentTab && tab.documentTab.body && hasIngredientSection;
+  }).map(function (tab) {
+    return {
+      recipeKey: tab.tabProperties.tabId,
+      title: tab.tabProperties.title,
+      documentId: docId,
+      documentUrl: 'https://docs.google.com/document/d/' + encodeURIComponent(docId) + '/edit?tab=' + encodeURIComponent(tab.tabProperties.tabId),
+      parentTitle: null,
+      sourceRevision: doc.revisionId || null,
+      active: true
+    };
+  });
+}
+
+function resolveFamilyAppRecipeKeys_(doc, tabs, keys) {
+  const catalog = getFamilyAppRecipeCatalogFromTabs_(doc, tabs);
+  return keys.map(function (key) {
+    return catalog.find(function (recipe) { return recipe.recipeKey === key; });
+  });
 }
 
 function generateGroceryList() {
@@ -498,19 +583,22 @@ function getSelectedRecipeTitles(tabs) {
 // Ignores parent category tabs (tabs with childTabs) so ingredients containing words like 
 // "chicken" or "pork" aren't mistaken for sub-recipes.
 function getIngredientsForRecipe(tabs, recipeTitle, visited) { 
-  visited = visited || [];
-
-  const targetKey = recipeTitle.trim().toLowerCase();
-
-  // Prevent infinite recursive loops if a sub-recipe references itself
-  if (visited.indexOf(targetKey) !== -1) return [];
-  visited.push(targetKey);
-
   const tab = findTabByTitle(tabs, recipeTitle);
   if (!tab) {
     Logger.log('WARNING: no tab found matching title "' + recipeTitle + '" - skipping.');
     return [];
   }
+  return getIngredientsForRecipeTab_(tabs, tab, visited);
+}
+
+function getIngredientsForRecipeTab_(tabs, tab, visited) {
+  visited = visited || [];
+  const recipeTitle = tab.tabProperties.title;
+  const targetKey = tab.tabProperties.tabId || recipeTitle.trim().toLowerCase();
+
+  // Prevent infinite recursive loops if a sub-recipe references itself
+  if (visited.indexOf(targetKey) !== -1) return [];
+  visited.push(targetKey);
 
   const content = tab.documentTab.body.content || [];
 
@@ -556,7 +644,7 @@ function getIngredientsForRecipe(tabs, recipeTitle, visited) {
         const subTitle = t.tabProperties.title.trim().toLowerCase();
 
         // Exclude exact matches to self
-        if (subTitle === targetKey) return false;
+        if (t.tabProperties.tabId === targetKey || subTitle === recipeTitle.trim().toLowerCase()) return false;
 
         return text.toLowerCase().indexOf(subTitle) !== -1;
       });
@@ -564,7 +652,7 @@ function getIngredientsForRecipe(tabs, recipeTitle, visited) {
       if (matchedSubTab) {
         // Sub-recipe match found: recursively fetch ingredients from sub-recipe tab
         const subRecipeTitle = matchedSubTab.tabProperties.title;
-        const subIngredients = getIngredientsForRecipe(tabs, subRecipeTitle, visited);
+        const subIngredients = getIngredientsForRecipeTab_(tabs, matchedSubTab, visited);
         ingredients = ingredients.concat(subIngredients);
       } else { 
         // Normal ingredient line (e.g., "4 Boneless Skinless Chicken Breasts")
